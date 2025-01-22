@@ -597,6 +597,17 @@ const ApiOptions = ({ showModelOptions, apiErrorMessage, modelIdErrorMessage, is
 							placeholder={`Default: ${azureOpenAiDefaultApiVersion}`}
 						/>
 					)}
+					<VSCodeCheckbox
+						checked={apiConfiguration?.enableCacheControl || false}
+						onChange={(e: any) => {
+							const isChecked = e.target.checked === true
+							setApiConfiguration({
+								...apiConfiguration,
+								enableCacheControl: isChecked,
+							})
+						}}>
+						Enable cache control
+					</VSCodeCheckbox>
 					<p
 						style={{
 							fontSize: "12px",

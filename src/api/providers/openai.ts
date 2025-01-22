@@ -4,6 +4,8 @@ import { ApiHandlerOptions, azureOpenAiDefaultApiVersion, ModelInfo, openAiModel
 import { ApiHandler } from "../index"
 import { convertToOpenAiMessages } from "../transform/openai-format"
 import { ApiStream } from "../transform/stream"
+import { applyCachingForClaude } from "../transform/claude-cache-control"
+import { fetchOpenRouterGenerationDetails } from "../transform/openrouter-generation-details"
 
 export class OpenAiHandler implements ApiHandler {
 	private options: ApiHandlerOptions
@@ -27,10 +29,17 @@ export class OpenAiHandler implements ApiHandler {
 	}
 
 	async *createMessage(systemPrompt: string, messages: Anthropic.Messages.MessageParam[]): ApiStream {
+		const model = this.getModel()
+
 		const openAiMessages: OpenAI.Chat.ChatCompletionMessageParam[] = [
 			{ role: "system", content: systemPrompt },
 			...convertToOpenAiMessages(messages),
 		]
+
+		// Add cache_control if enabled
+		if (this.options.enableCacheControl) {
+			applyCachingForClaude(openAiMessages, model.id)
+		}
 		const stream = await this.client.chat.completions.create({
 			model: this.options.openAiModelId ?? "",
 			messages: openAiMessages,
@@ -38,7 +47,14 @@ export class OpenAiHandler implements ApiHandler {
 			stream: true,
 			stream_options: { include_usage: true },
 		})
+
+		let genId: string | undefined
+
 		for await (const chunk of stream) {
+			if (!genId && chunk.id && chunk.id.startsWith("gen-")) {
+				genId = chunk.id
+			}
+
 			const delta = chunk.choices[0]?.delta
 			if (delta?.content) {
 				yield {
@@ -46,13 +62,20 @@ export class OpenAiHandler implements ApiHandler {
 					text: delta.content,
 				}
 			}
-			if (chunk.usage) {
-				yield {
-					type: "usage",
-					inputTokens: chunk.usage.prompt_tokens || 0,
-					outputTokens: chunk.usage.completion_tokens || 0,
+			if (!genId) {
+				if (chunk.usage) {
+					yield {
+						type: "usage",
+						inputTokens: chunk.usage.prompt_tokens || 0,
+						outputTokens: chunk.usage.completion_tokens || 0,
+					}
 				}
 			}
+		}
+
+		if (genId && this.options.openAiApiKey) {
+			const usageChunk = await fetchOpenRouterGenerationDetails(genId, this.options.openAiApiKey)
+			yield usageChunk
 		}
 	}
 

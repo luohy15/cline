@@ -48,6 +48,7 @@ type GlobalStateKey =
 	| "apiModelId"
 	| "awsRegion"
 	| "awsUseCrossRegionInference"
+	| "enableCacheControl"
 	| "vertexProjectId"
 	| "vertexRegion"
 	| "lastShownAnnouncementId"
@@ -395,6 +396,7 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 								awsSessionToken,
 								awsRegion,
 								awsUseCrossRegionInference,
+								enableCacheControl,
 								vertexProjectId,
 								vertexRegion,
 								openAiBaseUrl,
@@ -423,6 +425,7 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 							await this.storeSecret("awsSessionToken", awsSessionToken)
 							await this.updateGlobalState("awsRegion", awsRegion)
 							await this.updateGlobalState("awsUseCrossRegionInference", awsUseCrossRegionInference)
+							await this.updateGlobalState("enableCacheControl", enableCacheControl)
 							await this.updateGlobalState("vertexProjectId", vertexProjectId)
 							await this.updateGlobalState("vertexRegion", vertexRegion)
 							await this.updateGlobalState("openAiBaseUrl", openAiBaseUrl)
@@ -1092,6 +1095,7 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 			awsSessionToken,
 			awsRegion,
 			awsUseCrossRegionInference,
+			enableCacheControl,
 			vertexProjectId,
 			vertexRegion,
 			openAiBaseUrl,
@@ -1126,6 +1130,7 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 			this.getSecret("awsSessionToken") as Promise<string | undefined>,
 			this.getGlobalState("awsRegion") as Promise<string | undefined>,
 			this.getGlobalState("awsUseCrossRegionInference") as Promise<boolean | undefined>,
+			this.getGlobalState("enableCacheControl") as Promise<boolean | undefined>,
 			this.getGlobalState("vertexProjectId") as Promise<string | undefined>,
 			this.getGlobalState("vertexRegion") as Promise<string | undefined>,
 			this.getGlobalState("openAiBaseUrl") as Promise<string | undefined>,
@@ -1177,6 +1182,7 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 				awsSessionToken,
 				awsRegion,
 				awsUseCrossRegionInference,
+				enableCacheControl,
 				vertexProjectId,
 				vertexRegion,
 				openAiBaseUrl,
