@@ -38,6 +38,7 @@ export interface ApiHandlerOptions {
 	openAiHeaders?: Record<string, string> // Custom headers for OpenAI requests
 	liteLlmModelInfo?: LiteLLMModelInfo
 	anthropicBaseUrl?: string
+	openRouterBaseUrl?: string
 	openRouterApiKey?: string
 	openRouterModelId?: string
 	openRouterModelInfo?: ModelInfo

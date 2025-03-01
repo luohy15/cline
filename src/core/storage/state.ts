@@ -281,6 +281,10 @@ export async function getAllExtensionState(context: vscode.ExtensionContext) {
 	const enableCheckpointsSetting = await migrateEnableCheckpointsSetting(enableCheckpointsSettingRaw)
 	const mcpResponsesCollapsed = mcpResponsesCollapsedRaw ?? false
 
+	const openRouterCustomBaseUrl = vscode.workspace.getConfiguration("cline").get<string>("openRouterCustomBaseUrl")
+
+	const openRouterBaseUrl = openRouterCustomBaseUrl || "https://openrouter.ai/api/v1"
+
 	// Plan/Act separate models setting is a boolean indicating whether the user wants to use different models for plan and act. Existing users expect this to be enabled, while we want new users to opt in to this being disabled by default.
 	// On win11 state sometimes initializes as empty string instead of undefined
 	let planActSeparateModelsSetting: boolean | undefined = undefined
@@ -304,6 +308,7 @@ export async function getAllExtensionState(context: vscode.ExtensionContext) {
 			apiProvider,
 			apiModelId,
 			apiKey,
+			openRouterBaseUrl,
 			openRouterApiKey,
 			clineApiKey,
 			awsAccessKey,

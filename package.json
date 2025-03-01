@@ -318,7 +318,13 @@
 		},
 		"configuration": {
 			"title": "Cline",
-			"properties": {}
+			"properties": {
+				"cline.openRouterCustomBaseUrl": {
+					"type": "string",
+					"default": null,
+					"description": "Custom base URL for OpenRouter API calls. If not specified, defaults to https://openrouter.ai/api/v1"
+				}
+			}
 		}
 	},
 	"scripts": {

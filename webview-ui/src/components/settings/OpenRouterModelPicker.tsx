@@ -327,7 +327,9 @@ const OpenRouterModelPicker: React.FC<OpenRouterModelPickerProps> = ({ isPopup }
 					}}>
 					<>
 						The extension automatically fetches the latest list of models available on{" "}
-						<VSCodeLink style={{ display: "inline", fontSize: "inherit" }} href="https://openrouter.ai/models">
+						<VSCodeLink
+							style={{ display: "inline", fontSize: "inherit" }}
+							href={`${apiConfiguration?.openRouterBaseUrl}/models`}>
 							OpenRouter.
 						</VSCodeLink>
 						If you're unsure which model to choose, Cline works best with{" "}
